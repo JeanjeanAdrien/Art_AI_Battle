@@ -19,14 +19,15 @@ Format de réponse attendu (JSON uniquement) : { "name": "Nom de l'artiste", "ar
 export const generateArtistProfile = async () => {
     try {
         const model = genAI.getGenerativeModel({
-            model: "gemini-2.0-flash",
+            model: "gemini-2.5-flash",
             generationConfig: { responseMimeType: "application/json", temperature: 1.3 }
         });
 
         const result = await model.generateContent(ARTIST_GENERATION_PROMPT);
         const response = await result.response;
         const text = response.text();
-        const artist = JSON.parse(text);
+        const cleanedText = text.replace(/```json|```/g, '').trim();
+        const artist = JSON.parse(cleanedText);
 
         return {
             id: crypto.randomUUID(),
@@ -94,7 +95,8 @@ export const fuseArtists = async (artist1, artist2) => {
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
-        const artist = JSON.parse(text);
+        const cleanedText = text.replace(/```json|```/g, '').trim();
+        const artist = JSON.parse(cleanedText);
 
         return {
             id: crypto.randomUUID(),
